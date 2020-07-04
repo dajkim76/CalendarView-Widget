@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <org.hugoandrade.calendarviewlib.helpers.FrameLinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -6,9 +7,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center"
-    app:frame_width="1dp"
+    app:frame_width="0.1dp"
     app:frame_color="@android:color/transparent"
+    android:gravity="center"
     android:layout_gravity="center">
 
     <org.hugoandrade.calendarviewlib.helpers.SelectedTextView
@@ -21,15 +22,19 @@
         tools:enable="true"
         tools:text="14" />
 
-    <org.hugoandrade.calendarviewlib.helpers.MultipleTriangleView
+    <LinearLayout
+        android:layout_weight="1"
+        android:orientation="vertical"
         android:id="@+id/v_notes"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="2dp"
-        app:mtr_direction="top_left"
-        app:mtr_separator_width="2dp"
-        app:mtr_number_of_items="4"
-        app:mtr_view_direction="vertical"
-        />
+        android:layout_height="match_parent" />
+
+
 
 </org.hugoandrade.calendarviewlib.helpers.FrameLinearLayout>
+
+
+
+
+    <!--    app:frame_width="1dp"-->
+    <!--    app:frame_color="@android:color/transparent"-->

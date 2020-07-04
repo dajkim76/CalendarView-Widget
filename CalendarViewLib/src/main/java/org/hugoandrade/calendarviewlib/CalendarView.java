@@ -8,11 +8,6 @@ import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
-import android.support.annotation.AttrRes;
-import android.support.annotation.ColorInt;
-import android.support.annotation.NonNull;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -26,14 +21,17 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Scroller;
 import android.widget.TextView;
-
+import androidx.annotation.AttrRes;
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 import org.hugoandrade.calendarviewlib.helpers.FrameLinearLayout;
-import org.hugoandrade.calendarviewlib.helpers.MultipleTriangleView;
 import org.hugoandrade.calendarviewlib.helpers.SelectedTextView;
 import org.hugoandrade.calendarviewlib.helpers.YMDCalendar;
-
 import java.lang.reflect.Field;
 import java.text.DateFormatSymbols;
 import java.text.ParseException;
@@ -45,7 +43,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
 public class CalendarView extends FrameLayout {
@@ -557,19 +554,27 @@ public class CalendarView extends FrameLayout {
 
             FrameLinearLayout container = (FrameLinearLayout) view;
             SelectedTextView tvDay = view.findViewById(R.id.tv_calendar_day);
-            MultipleTriangleView vNotes = view.findViewById(R.id.v_notes);
+
+            //MultipleTriangleView vNotes = view.findViewById(R.id.v_notes);
+            LinearLayout vNotes = view.findViewById(R.id.v_notes);
+            if (vNotes.getChildCount() > 0) vNotes.removeAllViews();
 
             // Set Notes
-            vNotes.setColor(Color.TRANSPARENT);
-            vNotes.setTriangleBackgroundColor(Color.TRANSPARENT);
-            int i = 0;
+            //vNotes.setColor(Color.TRANSPARENT);
+            //vNotes.setTriangleBackgroundColor(Color.TRANSPARENT);
+            //int i = 0;
             for (CalendarObject c : calendarObjectList) {
-                vNotes.setColor(i, c.getSecondaryColor());
-                vNotes.setTriangleBackgroundColor(i, c.getPrimaryColor());
+                //vNotes.setColor(i, c.getSecondaryColor());
+                //vNotes.setTriangleBackgroundColor(i, c.getPrimaryColor());
+                TextView textView = (TextView) LayoutInflater.from(getContext()).inflate(R.layout.xml_textview,null);
+                textView.setBackgroundColor(c.getBgColor());
+                textView.setText(c.getText());
+                vNotes.addView(textView);
 
-                i++;
-                if (i == vNotes.getNumberOfItems())
-                    break;
+                //i++;
+                //if (i == vNotes.getNumberOfItems())
+                //if (i == 4)
+                    //break;
             }
 
             // Set day TextView (default)
@@ -578,13 +583,15 @@ public class CalendarView extends FrameLayout {
             tvDay.setSelectedColor(Color.TRANSPARENT);
             tvDay.setSelectedEnabled(false);
             changeTypeface(tvDay, Typeface.NORMAL);
-            container.setFrameColor(Color.TRANSPARENT);
+            //container.setFrameColor(Color.TRANSPARENT);
+            container.setFrameColor(mAttributes.get(Attr.selectedDayBorderColor));
             container.setBackgroundColor(mAttributes.get(Attr.dayBackgroundColor));
 
             // Set offset day (sundays or mondays)
             int dayOffset = mAttributes.get(Attr.dayOffset);
             int startingWeekDay = mAttributes.get(Attr.startingWeekDay);
             boolean isOffsetDay = position % 7 == (7 + dayOffset - startingWeekDay) % 7;
+
             if (isOffsetDay) {
                 tvDay.setTextColor(mAttributes.get(Attr.offsetDayTextColor));
                 container.setBackgroundColor(mAttributes.get(Attr.offsetDayBackgroundColor));
@@ -597,7 +604,7 @@ public class CalendarView extends FrameLayout {
                 } else {
                     tvDay.setTextColor(mAttributes.get(Attr.selectedDayTextColor));
                 }
-                container.setFrameColor(mAttributes.get(Attr.selectedDayBorderColor));
+                //container.setFrameColor(mAttributes.get(Attr.selectedDayBorderColor));
                 container.setBackgroundColor(mAttributes.get(Attr.selectedDayBackgroundColor));
             }
 
@@ -889,14 +896,24 @@ public class CalendarView extends FrameLayout {
 
         private String mID;
         private Calendar mDatetime;
-        private int mPrimaryColor;
-        private int mSecondaryColor;
+        //private int mPrimaryColor;
+        //private int mSecondaryColor;
+        private String text;
+        private int bgColor;
 
-        public CalendarObject(String id, Calendar datetime, int primaryColor, int secondaryColor) {
-            mID = id;
-            mDatetime = datetime;
-            mPrimaryColor = primaryColor;
-            mSecondaryColor = secondaryColor;
+//        public CalendarObject(String id, Calendar datetime, int primaryColor, int secondaryColor) {
+//            mID = id;
+//            mDatetime = datetime;
+//            mPrimaryColor = primaryColor;
+//            mSecondaryColor = secondaryColor;
+//        }
+
+
+        public CalendarObject(String mID, Calendar mDatetime, String text, int bgColor) {
+            this.mID = mID;
+            this.mDatetime = mDatetime;
+            this.text = text;
+            this.bgColor = bgColor;
         }
 
         public String getID() {
@@ -907,12 +924,21 @@ public class CalendarView extends FrameLayout {
             return mDatetime;
         }
 
-        public int getPrimaryColor() {
-            return mPrimaryColor;
+//        public int getPrimaryColor() {
+//            return mPrimaryColor;
+//        }
+//
+//        public int getSecondaryColor() {
+//            return mSecondaryColor;
+//        }
+
+
+        public String getText() {
+            return text;
         }
 
-        public int getSecondaryColor() {
-            return mSecondaryColor;
+        public int getBgColor() {
+            return bgColor;
         }
     }
 

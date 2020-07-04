@@ -11,11 +11,12 @@ import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
-import android.support.annotation.ColorInt;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewOutlineProvider;
 import android.widget.LinearLayout;
+
+import androidx.annotation.ColorInt;
 
 import org.hugoandrade.calendarviewlib.R;
 
