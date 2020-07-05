@@ -16,9 +16,9 @@ public class YMDCalendar {
     }
 
     public YMDCalendar(Calendar calendar) {
-        this(calendar == null? - 1: calendar.get(Calendar.DAY_OF_MONTH),
-                calendar == null? - 1: calendar.get(Calendar.MONTH),
-                calendar == null? - 1: calendar.get(Calendar.YEAR));
+        this(calendar == null ? -1 : calendar.get(Calendar.DAY_OF_MONTH),
+                calendar == null ? -1 : calendar.get(Calendar.MONTH),
+                calendar == null ? -1 : calendar.get(Calendar.YEAR));
     }
 
     @Override

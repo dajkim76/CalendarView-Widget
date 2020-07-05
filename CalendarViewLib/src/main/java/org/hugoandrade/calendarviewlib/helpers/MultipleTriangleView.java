@@ -103,7 +103,7 @@ public class MultipleTriangleView extends View {
         }
 
         mTriangleAttr = new ArrayList<>();
-        for (int i = 0 ; i < mNumberOfItems ; i++) {
+        for (int i = 0; i < mNumberOfItems; i++) {
             TriangleAttr t = new TriangleAttr();
 
             t.mDirection = mDirection;
@@ -173,6 +173,7 @@ public class MultipleTriangleView extends View {
 
     /**
      * Set the color of the triangle.
+     *
      * @param color the color of the triangle.
      */
     public void setColor(int color) {
@@ -246,6 +247,7 @@ public class MultipleTriangleView extends View {
 
     /**
      * Set the direction of the triangle.
+     *
      * @param direction the direction of the triangle.
      */
     public void setDirection(Direction direction) {
@@ -291,8 +293,7 @@ public class MultipleTriangleView extends View {
 
                 startY = startY + iheight + mSeparatorWidth;
             }
-        }
-        else {
+        } else {
             if (separatorWidthTotal > height)
                 return;
 
@@ -328,25 +329,25 @@ public class MultipleTriangleView extends View {
             Point p1, p2, p3;
             switch (t.mDirection) {
                 case TOP_LEFT:
-                    p1 = new Point((int)(initX), (int)(initY));
-                    p2 = new Point((int)(initX + Math.min(width, height)), (int)(initY));
-                    p3 = new Point((int)(initX), (int)(initY + Math.min(width, height)));
+                    p1 = new Point((int) (initX), (int) (initY));
+                    p2 = new Point((int) (initX + Math.min(width, height)), (int) (initY));
+                    p3 = new Point((int) (initX), (int) (initY + Math.min(width, height)));
                     break;
                 case TOP_RIGHT:
-                    p1 = new Point((int)(initX + width), (int)(initY));
-                    p2 = new Point((int)(initX + width - Math.min(width, height)), (int)(initY));
-                    p3 = new Point((int)(initX + width), (int)(initY + Math.min(width, height)));
+                    p1 = new Point((int) (initX + width), (int) (initY));
+                    p2 = new Point((int) (initX + width - Math.min(width, height)), (int) (initY));
+                    p3 = new Point((int) (initX + width), (int) (initY + Math.min(width, height)));
                     break;
                 case BOTTOM_LEFT:
-                    p1 = new Point((int)(initX), (int)(initY + height));
-                    p2 = new Point((int)(initX - Math.min(width, height)), (int)(initY + height));
-                    p3 = new Point((int)(initX), (int)(initY + height - Math.min(width, height)));
+                    p1 = new Point((int) (initX), (int) (initY + height));
+                    p2 = new Point((int) (initX - Math.min(width, height)), (int) (initY + height));
+                    p3 = new Point((int) (initX), (int) (initY + height - Math.min(width, height)));
                     break;
                 case BOTTOM_RIGHT:
                 default:
-                    p1 = new Point((int)(initX + width), (int)(initY + height));
-                    p2 = new Point((int)(initX + width), (int)(initY + height - Math.min(width, height)));
-                    p3 = new Point((int)(initX + width - Math.min(width, height)), (int)(initY + height));
+                    p1 = new Point((int) (initX + width), (int) (initY + height));
+                    p2 = new Point((int) (initX + width), (int) (initY + height - Math.min(width, height)));
+                    p3 = new Point((int) (initX + width - Math.min(width, height)), (int) (initY + height));
             }
             t.mTrianglePath.moveTo(p1.x, p1.y);
             t.mTrianglePath.lineTo(p2.x, p2.y);
