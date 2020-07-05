@@ -8,12 +8,14 @@ import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -96,6 +98,7 @@ public class CalendarView extends FrameLayout {
      * Set to store attributes
      */
     private SparseIntArray mAttributes = new SparseIntArray();
+    private String mMonthHeaderFormat = "MMMM yyyy";
 
     /**
      * Constructor
@@ -133,6 +136,13 @@ public class CalendarView extends FrameLayout {
                 a.getColor(R.styleable.CalendarView_month_header_arrows_color, colorPrimary));
         mAttributes.put(Attr.monthHeaderShow,
                 a.getBoolean(R.styleable.CalendarView_month_header_show, true) ? 1 : 0);
+        String monthHeaderFormat = a.getString(R.styleable.CalendarView_month_header_format);
+        if (!TextUtils.isEmpty(monthHeaderFormat)) {
+            mMonthHeaderFormat = monthHeaderFormat;
+        }
+
+        mAttributes.put(Attr.monthHeaderUnderline,
+                a.getBoolean(R.styleable.CalendarView_month_header_underline, true) ? 1 : 0);
 
         // WeekHeader
         mAttributes.put(Attr.weekHeaderTextColor,
@@ -146,12 +156,20 @@ public class CalendarView extends FrameLayout {
                         mAttributes.get(Attr.weekHeaderBackgroundColor)));
         mAttributes.put(Attr.weekHeaderMovable,
                 a.getBoolean(R.styleable.CalendarView_week_header_movable, true) ? 1 : 0);
+        mAttributes.put(Attr.weekHeaderShortLabel,
+                a.getBoolean(R.styleable.CalendarView_week_header_short_label, false) ? 1 : 0);
+        mAttributes.put(Attr.weekHeaderTextSize,
+                a.getDimensionPixelSize(R.styleable.CalendarView_week_header_text_size, spToPx(8, getContext())));
 
         // Day Item
         mAttributes.put(Attr.dayTextColor,
                 a.getColor(R.styleable.CalendarView_day_text_color, colorPrimary));
         mAttributes.put(Attr.dayBackgroundColor,
                 a.getColor(R.styleable.CalendarView_day_background_color, Color.TRANSPARENT));
+        mAttributes.put(Attr.dayTextGravity,
+                a.getInt(R.styleable.CalendarView_day_text_gravity, Gravity.NO_GRAVITY));
+        mAttributes.put(Attr.dayTextSize,
+                a.getDimensionPixelSize(R.styleable.CalendarView_day_text_size, spToPx(14, getContext())));
 
         // OffsetDay
         mAttributes.put(Attr.offsetDayTextColor,
@@ -306,8 +324,10 @@ public class CalendarView extends FrameLayout {
         TextView tvMonth = view.findViewById(R.id.tv_month);
         tvMonth.setBackgroundColor(mAttributes.get(Attr.monthHeaderBackgroundColor));
         tvMonth.setTextColor(mAttributes.get(Attr.monthHeaderTextColor));
-        tvMonth.setText(DateFormat.format("MMMM yyyy", month));
-        tvMonth.setPaintFlags(tvMonth.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+        tvMonth.setText(DateFormat.format(mMonthHeaderFormat, month));
+        if (mAttributes.get(Attr.monthHeaderUnderline) == 1) {
+            tvMonth.setPaintFlags(tvMonth.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+        }
         changeVisibility(tvMonth, mAttributes.get(Attr.monthHeaderShow) == 1 ? VISIBLE : GONE);
     }
 
@@ -326,6 +346,7 @@ public class CalendarView extends FrameLayout {
         int dayOffset = mAttributes.get(Attr.dayOffset);
         int startingWeekDay = mAttributes.get(Attr.startingWeekDay);
         int weekHeaderTextColor = mAttributes.get(Attr.weekHeaderTextColor);
+        int weekHeaderTextSize = mAttributes.get(Attr.weekHeaderTextSize);
         int weekHeaderBackgroundColor = mAttributes.get(Attr.weekHeaderBackgroundColor);
         int weekHeaderOffsetDayTextColor = mAttributes.get(Attr.weekHeaderOffsetDayTextColor);
         int weekHeaderOffsetDayBackgroundColor = mAttributes.get(Attr.weekHeaderOffsetDayBackgroundColor);
@@ -333,7 +354,12 @@ public class CalendarView extends FrameLayout {
         String[] weekHeaderTexts = new String[7];
         for (int i = 0; i < weekHeaderTexts.length; i++) {
             int dayIndex = (i + startingWeekDay - 1) % 7 + 1;
-            weekHeaderTexts[i] = simpleText(new DateFormatSymbols().getWeekdays()[dayIndex]);
+            String label;
+            if (mAttributes.get(Attr.weekHeaderShortLabel) == 1)
+                label = new DateFormatSymbols().getShortWeekdays()[dayIndex];
+            else
+                label = new DateFormatSymbols().getWeekdays()[dayIndex];
+            weekHeaderTexts[i] = simpleText(label);
         }
 
         // Set TextColor
@@ -342,7 +368,7 @@ public class CalendarView extends FrameLayout {
             TextView tv = view.findViewById(weekHeaderIds[i]);
             tv.setText(weekHeaderTexts[i]);
             tv.setAllCaps(true);
-            tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 8);
+            tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, weekHeaderTextSize);
 
             if (i != j) {
                 tv.setTextColor(weekHeaderTextColor);
@@ -581,6 +607,8 @@ public class CalendarView extends FrameLayout {
             tvDay.setText(String.valueOf(day.day));
             tvDay.setTextColor(mAttributes.get(Attr.dayTextColor));
             tvDay.setSelectedColor(Color.TRANSPARENT);
+            tvDay.setGravity(mAttributes.get(Attr.dayTextGravity));
+            tvDay.setTextSize(TypedValue.COMPLEX_UNIT_PX, mAttributes.get(Attr.dayTextSize));
             tvDay.setSelectedEnabled(false);
             changeTypeface(tvDay, Typeface.NORMAL);
             //container.setFrameColor(Color.TRANSPARENT);
@@ -1175,17 +1203,23 @@ public class CalendarView extends FrameLayout {
         static final int monthHeaderTextColor = 17;
         static final int monthHeaderArrowsColor = 22;
         static final int monthHeaderShow = 23;
+        static final int monthHeaderFormat = 27;
+        static final int monthHeaderUnderline = 28;
 
         static final int weekHeaderBackgroundColor = 18;
         static final int weekHeaderTextColor = 19;
         static final int weekHeaderOffsetDayBackgroundColor = 20;
         static final int weekHeaderOffsetDayTextColor = 21;
         static final int weekHeaderMovable = 24;
+        static final int weekHeaderShortLabel = 25;
+        static final int weekHeaderTextSize = 26;
 
         static final int contentBackgroundColor = 4;
 
         static final int dayTextColor = 5;
         static final int dayBackgroundColor = 6;
+        static final int dayTextGravity = 29;
+        static final int dayTextSize = 30;
 
         static final int currentDayTextColor = 7;
         static final int currentDayTextStyle = 3;
@@ -1243,5 +1277,13 @@ public class CalendarView extends FrameLayout {
             }
         }
         return text;
+    }
+
+    private static int dpToPx(float dp, Context context) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
+    }
+
+    private static int spToPx(float sp, Context context) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, context.getResources().getDisplayMetrics());
     }
 }

@@ -12,9 +12,12 @@
 
     <org.hugoandrade.calendarviewlib.helpers.SelectedTextView
         android:id="@+id/tv_calendar_day"
-        android:layout_width="30dp"
+        android:layout_width="match_parent"
         android:layout_height="30dp"
         android:gravity="center"
+        android:paddingLeft="3dp"
+        android:paddingRight="3dp"
+        android:paddingTop="1dp"
         android:textSize="14sp"
         app:selected_padding="2dp"
         tools:enable="true"
