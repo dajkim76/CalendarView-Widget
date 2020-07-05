@@ -233,8 +233,9 @@ public class CalendarView extends FrameLayout {
             @Override
             public void onPageSelected(int position) {
                 if (mPageListener != null) {
-                    YMDCalendar ymdCalendar = mCalendarPagerAdapter.getDateAtPosition(position);
-                    mPageListener.onMonthChanged(ymdCalendar.month, ymdCalendar.year);
+                    YMDCalendar ymdCalendar = mCalendarPagerAdapter.getMonthYmdCalendar(position);
+                    List<YMDCalendar> daysList = mCalendarPagerAdapter.getDayList(mCalendarPagerAdapter.getMonthCalendar(position));
+                    mPageListener.onMonthChanged(ymdCalendar.month, ymdCalendar.year, daysList);
                 }
             }
         });
@@ -265,11 +266,20 @@ public class CalendarView extends FrameLayout {
     }
 
     public int getShownMonth() {
-        return mCalendarPagerAdapter.getDateAtPosition(mCalendarPagerAdapter.mCurrentPage).month;
+        return mCalendarPagerAdapter.getMonthYmdCalendar(mCalendarPagerAdapter.mCurrentPage).month;
     }
 
     public int getShownYear() {
-        return mCalendarPagerAdapter.getDateAtPosition(mCalendarPagerAdapter.mCurrentPage).year;
+        return mCalendarPagerAdapter.getMonthYmdCalendar(mCalendarPagerAdapter.mCurrentPage).year;
+    }
+
+    public YMDCalendar getShownYearMonth() {
+        return mCalendarPagerAdapter.getMonthYmdCalendar(mCalendarPagerAdapter.mCurrentPage);
+    }
+
+    public List<YMDCalendar> getShownDays() {
+        Calendar month = mCalendarPagerAdapter.getMonthCalendar(mCalendarPagerAdapter.mCurrentPage);
+        return mCalendarPagerAdapter.getDayList(month);
     }
 
     public Calendar getCurrentDate() {
@@ -654,7 +664,8 @@ public class CalendarView extends FrameLayout {
             container.setFrameColor(mAttributes.get(Attr.selectedDayBorderColor));
             int dayBackgroundColor = mAttributes.get(Attr.dayBackgroundColor);
             int dayOutBackgroundColor = mAttributes.get(Attr.dayOutBackgroundColor);
-            container.setBackgroundColor(dayBackgroundColor);
+            int backgroundColor;
+            container.setBackgroundColor(backgroundColor = dayBackgroundColor);
 
             // Set offset day (sundays or mondays)
             int dayOffset = mAttributes.get(Attr.dayOffset);
@@ -664,7 +675,7 @@ public class CalendarView extends FrameLayout {
 
             if (isOffsetDay) {
                 tvDay.setTextColor(mAttributes.get(Attr.offsetDayTextColor));
-                container.setBackgroundColor(mAttributes.get(Attr.offsetDayBackgroundColor));
+                container.setBackgroundColor(backgroundColor = mAttributes.get(Attr.offsetDayBackgroundColor));
             }
 
             // Set selected day (frame)
@@ -675,8 +686,7 @@ public class CalendarView extends FrameLayout {
                     tvDay.setTextColor(mAttributes.get(Attr.selectedDayTextColor));
                 }
                 //container.setFrameColor(mAttributes.get(Attr.selectedDayBorderColor));
-                container.setBackgroundColor(mAttributes.get(Attr.selectedDayBackgroundColor));
-                haveContainerBackgroundColor = true;
+                container.setBackgroundColor(backgroundColor = mAttributes.get(Attr.selectedDayBackgroundColor));
             }
 
             // Set current day
@@ -690,20 +700,19 @@ public class CalendarView extends FrameLayout {
                 }
                 changeTypeface(tvDay, mAttributes.get(Attr.currentDayTextStyle));
                 tvDay.setSelectedEnabled(mAttributes.get(Attr.currentDayCircleEnable) == 1);
-                container.setBackgroundColor(mAttributes.get(Attr.currentDayBackgroundColor));
-                haveContainerBackgroundColor = true;
+                container.setBackgroundColor(backgroundColor = mAttributes.get(Attr.currentDayBackgroundColor));
             }
 
-
             if (isFirstFromSameMonth(day, new YMDCalendar(month)) != THIS_MONTH || day.isBefore(mMinDate)) {
-                if (haveContainerBackgroundColor || dayBackgroundColor == dayOutBackgroundColor) {
+                if (backgroundColor != dayBackgroundColor) {
                     container.setAlpha(0.25f);
                 } else {
-                    container.setAlpha(1f);
                     container.setBackgroundColor(dayOutBackgroundColor);
+                    container.setAlpha(1f);
                 }
-            } else
+            } else {
                 container.setAlpha(1f);
+            }
 
             if (mDayViewDecorator != null) {
                 int dayIndex = (position + startingWeekDay - 1) % 7 + 1;
@@ -751,10 +760,16 @@ public class CalendarView extends FrameLayout {
             }
         }
 
-        YMDCalendar getDateAtPosition(int position) {
+        public YMDCalendar getMonthYmdCalendar(int position) {
             Calendar month = (Calendar) mInitialMonth.clone();
             month.add(Calendar.MONTH, position - mInitialPage);
             return new YMDCalendar(month);
+        }
+
+        public Calendar getMonthCalendar(int position) {
+            Calendar month = (Calendar) mInitialMonth.clone();
+            month.add(Calendar.MONTH, position - mInitialPage);
+            return month;
         }
 
         private int isFirstFromSameMonth(YMDCalendar ymdCalendarFirst, YMDCalendar ymdCalendar) {
@@ -1270,7 +1285,7 @@ public class CalendarView extends FrameLayout {
     }
 
     public interface OnMonthChangedListener {
-        void onMonthChanged(int month, int year);
+        void onMonthChanged(int month, int year, @NonNull List<YMDCalendar> daysList);
     }
 
     public interface MonthViewDecorator {

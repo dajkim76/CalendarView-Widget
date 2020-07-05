@@ -6,7 +6,7 @@ import java.util.Date;
 public class YMDCalendar {
 
     public final int day;
-    public final int month;
+    public final int month; // Jan -> 0
     public final int year;
 
     public YMDCalendar(int day, int month, int year) {
@@ -42,6 +42,15 @@ public class YMDCalendar {
     @Override
     public int hashCode() {
         return day + month * 100 + year * 10000;
+    }
+
+    @Override
+    public String toString() {
+        return "YMDCalendar{" +
+                "day=" + day +
+                ", month=" + month +
+                ", year=" + year +
+                '}';
     }
 
     public static Date toDate(YMDCalendar ymdCalendar) {
