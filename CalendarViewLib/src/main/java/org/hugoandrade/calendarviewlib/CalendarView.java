@@ -177,6 +177,8 @@ public class CalendarView extends FrameLayout {
                 a.getColor(R.styleable.CalendarView_day_text_color, colorPrimary));
         mAttributes.put(Attr.dayBackgroundColor,
                 a.getColor(R.styleable.CalendarView_day_background_color, Color.TRANSPARENT));
+        mAttributes.put(Attr.dayOutBackgroundColor,
+                a.getColor(R.styleable.CalendarView_day_out_background_color, mAttributes.get(Attr.dayBackgroundColor)));
         mAttributes.put(Attr.dayTextGravity,
                 a.getInt(R.styleable.CalendarView_day_text_gravity, Gravity.NO_GRAVITY));
         mAttributes.put(Attr.dayTextSize,
@@ -646,12 +648,15 @@ public class CalendarView extends FrameLayout {
             changeTypeface(tvDay, Typeface.NORMAL);
             //container.setFrameColor(Color.TRANSPARENT);
             container.setFrameColor(mAttributes.get(Attr.selectedDayBorderColor));
-            container.setBackgroundColor(mAttributes.get(Attr.dayBackgroundColor));
+            int dayBackgroundColor = mAttributes.get(Attr.dayBackgroundColor);
+            int dayOutBackgroundColor = mAttributes.get(Attr.dayOutBackgroundColor);
+            container.setBackgroundColor(dayBackgroundColor);
 
             // Set offset day (sundays or mondays)
             int dayOffset = mAttributes.get(Attr.dayOffset);
             int startingWeekDay = mAttributes.get(Attr.startingWeekDay);
             boolean isOffsetDay = position % 7 == (7 + dayOffset - startingWeekDay) % 7;
+            boolean haveContainerBackgroundColor = false;
 
             if (isOffsetDay) {
                 tvDay.setTextColor(mAttributes.get(Attr.offsetDayTextColor));
@@ -667,6 +672,7 @@ public class CalendarView extends FrameLayout {
                 }
                 //container.setFrameColor(mAttributes.get(Attr.selectedDayBorderColor));
                 container.setBackgroundColor(mAttributes.get(Attr.selectedDayBackgroundColor));
+                haveContainerBackgroundColor = true;
             }
 
             // Set current day
@@ -681,11 +687,18 @@ public class CalendarView extends FrameLayout {
                 changeTypeface(tvDay, mAttributes.get(Attr.currentDayTextStyle));
                 tvDay.setSelectedEnabled(mAttributes.get(Attr.currentDayCircleEnable) == 1);
                 container.setBackgroundColor(mAttributes.get(Attr.currentDayBackgroundColor));
+                haveContainerBackgroundColor = true;
             }
 
-            if (isFirstFromSameMonth(day, new YMDCalendar(month)) != THIS_MONTH || day.isBefore(mMinDate))
-                container.setAlpha(0.25f);
-            else
+
+            if (isFirstFromSameMonth(day, new YMDCalendar(month)) != THIS_MONTH || day.isBefore(mMinDate)) {
+                if (haveContainerBackgroundColor || dayBackgroundColor == dayOutBackgroundColor) {
+                    container.setAlpha(0.25f);
+                } else {
+                    container.setAlpha(1f);
+                    container.setBackgroundColor(dayOutBackgroundColor);
+                }
+            } else
                 container.setAlpha(1f);
 
             if (mDayViewDecorator != null) {
@@ -1274,6 +1287,7 @@ public class CalendarView extends FrameLayout {
         static final int dayBackgroundColor = 6;
         static final int dayTextGravity = 29;
         static final int dayTextSize = 30;
+        static final int dayOutBackgroundColor = 31;
 
         static final int currentDayTextColor = 7;
         static final int currentDayTextStyle = 3;

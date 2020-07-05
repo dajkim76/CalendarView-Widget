@@ -73,6 +73,7 @@
             <flag name="top" value="48" />
         </attr>
         <attr name="day_background_color" format="color" />
+        <attr name="day_out_background_color" format="color" />
         <attr name="offset_day_text_color" format="color" />
         <attr name="offset_day_background_color" format="color" />
         <attr name="current_day_text_color" format="color" />
