@@ -446,6 +446,8 @@ public class CalendarView extends FrameLayout {
             Collections.sort(mObjectsByMonthMap.get(dateCode), new Comparator<CalendarObject>() {
                 @Override
                 public int compare(CalendarObject o1, CalendarObject o2) {
+                    if (o1.getDatetime().getTimeInMillis() == o2.getDatetime().getTimeInMillis())
+                        return 0;
                     return o1.getDatetime().after(o2.getDatetime()) ? 1 : -1;
                 }
             });
