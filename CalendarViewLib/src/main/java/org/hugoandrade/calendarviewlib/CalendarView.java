@@ -629,6 +629,10 @@ public class CalendarView extends FrameLayout {
                 TextView textView = (TextView) LayoutInflater.from(getContext()).inflate(R.layout.xml_textview, null);
                 textView.setBackgroundColor(c.getBgColor());
                 textView.setText(c.getText());
+                textView.setTextColor(c.getTextColor());
+                if (c.getTextSizeSp() != null) {
+                    textView.setTextSize(c.getTextSizeSp());
+                }
                 c.updateView(textView, day, eventIndex++);
                 vNotes.addView(textView);
 
@@ -977,7 +981,9 @@ public class CalendarView extends FrameLayout {
         //private int mPrimaryColor;
         //private int mSecondaryColor;
         private String text;
+        private int textColor;
         private int bgColor;
+        private Float textSizeSp = null;
 
 //        public CalendarObject(String id, Calendar datetime, int primaryColor, int secondaryColor) {
 //            mID = id;
@@ -986,12 +992,17 @@ public class CalendarView extends FrameLayout {
 //            mSecondaryColor = secondaryColor;
 //        }
 
-
         public CalendarObject(String mID, Calendar mDatetime, String text, int bgColor) {
+            this(mID, mDatetime, text, Color.WHITE, bgColor, null);
+        }
+
+        public CalendarObject(String mID, Calendar mDatetime, String text, int textColor, int bgColor, Float textSizeSp) {
             this.mID = mID;
             this.mDatetime = mDatetime;
             this.text = text;
+            this.textColor = textColor;
             this.bgColor = bgColor;
+            this.textSizeSp = textSizeSp;
         }
 
         public String getID() {
@@ -1017,6 +1028,18 @@ public class CalendarView extends FrameLayout {
 
         public int getBgColor() {
             return bgColor;
+        }
+
+        public int getTextColor() {
+            return textColor;
+        }
+
+        public void setTextSizeSp(float textSizeSp) {
+            this.textSizeSp = textSizeSp;
+        }
+
+        public Float getTextSizeSp() {
+            return textSizeSp;
         }
 
         public void updateView(TextView textView, YMDCalendar calendar, int eventIndex) {
