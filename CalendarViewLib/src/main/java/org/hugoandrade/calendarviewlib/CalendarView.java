@@ -643,6 +643,9 @@ public class CalendarView extends FrameLayout {
                 if (c.getTextSizeSp() != null) {
                     textView.setTextSize(c.getTextSizeSp());
                 }
+                if (c.getTextGravity() != null) {
+                    textView.setGravity(c.getTextGravity());
+                }
                 c.updateView(textView, day, eventIndex++);
                 vNotes.addView(textView);
 
@@ -999,6 +1002,7 @@ public class CalendarView extends FrameLayout {
         private int textColor;
         private int bgColor;
         private Float textSizeSp = null;
+        private Integer textGravity = null;
 
 //        public CalendarObject(String id, Calendar datetime, int primaryColor, int secondaryColor) {
 //            mID = id;
@@ -1012,12 +1016,17 @@ public class CalendarView extends FrameLayout {
         }
 
         public CalendarObject(String mID, Calendar mDatetime, String text, int textColor, int bgColor, Float textSizeSp) {
+            this(mID, mDatetime, text, textColor, bgColor, textSizeSp, null);
+        }
+
+        public CalendarObject(String mID, Calendar mDatetime, String text, int textColor, int bgColor, Float textSizeSp, Integer textGravity) {
             this.mID = mID;
             this.mDatetime = mDatetime;
             this.text = text;
             this.textColor = textColor;
             this.bgColor = bgColor;
             this.textSizeSp = textSizeSp;
+            this.textGravity = textGravity;
         }
 
         public String getID() {
@@ -1055,6 +1064,14 @@ public class CalendarView extends FrameLayout {
 
         public Float getTextSizeSp() {
             return textSizeSp;
+        }
+
+        public void setTextGravity(int textGravity) {
+            this.textGravity = textGravity;
+        }
+
+        public Integer getTextGravity() {
+            return textGravity;
         }
 
         public void updateView(TextView textView, YMDCalendar calendar, int eventIndex) {

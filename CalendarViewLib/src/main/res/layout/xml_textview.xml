@@ -5,8 +5,9 @@
     android:layout_height="match_parent"
     android:ellipsize="end"
     android:gravity="left|center_vertical"
-    android:paddingLeft="3dp"
     android:lines="1"
+    android:paddingLeft="3dp"
+    android:paddingRight="3dp"
     android:textColor="#fff"
     android:textSize="8dp"
     tools:ignore="SpUsage" />
