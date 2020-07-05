@@ -30,6 +30,7 @@ import android.widget.TextView;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -99,6 +100,16 @@ public class CalendarView extends FrameLayout {
      */
     private SparseIntArray mAttributes = new SparseIntArray();
     private String mMonthHeaderFormat = "MMMM yyyy";
+
+    /**
+     * View decorator
+     */
+    @Nullable
+    private MonthViewDecorator mMonthViewDecorator = null;
+    @Nullable
+    private WeekViewDecorator mWeekViewDecorator = null;
+    @Nullable
+    private DayViewDecorator mDayViewDecorator = null;
 
     /**
      * Constructor
@@ -308,6 +319,18 @@ public class CalendarView extends FrameLayout {
         mPageListener = listener;
     }
 
+    public void setMonthViewDecorator(@Nullable MonthViewDecorator monthViewDecorator) {
+        mMonthViewDecorator = monthViewDecorator;
+    }
+
+    public void setWeekViewDecorator(@Nullable WeekViewDecorator weekViewDecorator) {
+        this.mWeekViewDecorator = weekViewDecorator;
+    }
+
+    public void setDayViewDecorator(@Nullable DayViewDecorator dayViewDecorator) {
+        this.mDayViewDecorator = dayViewDecorator;
+    }
+
     public void setSelectedDate(Calendar date) {
         mCalendarPagerAdapter.setSelectedDate(date);
     }
@@ -329,6 +352,9 @@ public class CalendarView extends FrameLayout {
             tvMonth.setPaintFlags(tvMonth.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         }
         changeVisibility(tvMonth, mAttributes.get(Attr.monthHeaderShow) == 1 ? VISIBLE : GONE);
+        if (mMonthViewDecorator != null) {
+            mMonthViewDecorator.updateView(tvMonth, new YMDCalendar(month));
+        }
     }
 
     private void setWeekHeader(View view, int weekHeaderVisible) {
@@ -376,6 +402,11 @@ public class CalendarView extends FrameLayout {
             } else {
                 tv.setTextColor(weekHeaderOffsetDayTextColor);
                 tv.setBackgroundColor(weekHeaderOffsetDayBackgroundColor);
+            }
+
+            if (mWeekViewDecorator != null) {
+                int dayIndex = (i + startingWeekDay - 1) % 7 + 1;
+                mWeekViewDecorator.updateView(tv, dayIndex);
             }
         }
     }
@@ -589,12 +620,14 @@ public class CalendarView extends FrameLayout {
             //vNotes.setColor(Color.TRANSPARENT);
             //vNotes.setTriangleBackgroundColor(Color.TRANSPARENT);
             //int i = 0;
+            int eventIndex = 0;
             for (CalendarObject c : calendarObjectList) {
                 //vNotes.setColor(i, c.getSecondaryColor());
                 //vNotes.setTriangleBackgroundColor(i, c.getPrimaryColor());
                 TextView textView = (TextView) LayoutInflater.from(getContext()).inflate(R.layout.xml_textview, null);
                 textView.setBackgroundColor(c.getBgColor());
                 textView.setText(c.getText());
+                c.updateView(textView, day, eventIndex++);
                 vNotes.addView(textView);
 
                 //i++;
@@ -654,6 +687,11 @@ public class CalendarView extends FrameLayout {
                 container.setAlpha(0.25f);
             else
                 container.setAlpha(1f);
+
+            if (mDayViewDecorator != null) {
+                int dayIndex = (position + startingWeekDay - 1) % 7 + 1;
+                mDayViewDecorator.updateView(tvDay, dayIndex, day);
+            }
 
             if (day.isBefore(mMinDate)) {
                 container.setOnClickListener(null);
@@ -967,6 +1005,10 @@ public class CalendarView extends FrameLayout {
         public int getBgColor() {
             return bgColor;
         }
+
+        public void updateView(TextView textView, YMDCalendar calendar, int eventIndex) {
+            // empty
+        }
     }
 
     public static class CalendarViewPager extends ViewPager {
@@ -1193,6 +1235,18 @@ public class CalendarView extends FrameLayout {
 
     public interface OnMonthChangedListener {
         void onMonthChanged(int month, int year);
+    }
+
+    public interface MonthViewDecorator {
+        void updateView(@NonNull TextView textView, @NonNull YMDCalendar calendar);
+    }
+
+    public interface WeekViewDecorator {
+        void updateView(@NonNull TextView textView, int dayIndex);
+    }
+
+    public interface DayViewDecorator {
+        void updateView(@NonNull SelectedTextView textView, int dayIndex, @NonNull YMDCalendar calendar);
     }
 
     private static class Attr {
