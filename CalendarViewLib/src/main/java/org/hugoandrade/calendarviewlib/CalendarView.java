@@ -232,11 +232,7 @@ public class CalendarView extends FrameLayout {
         mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                if (mPageListener != null) {
-                    YMDCalendar ymdCalendar = mCalendarPagerAdapter.getMonthYmdCalendar(position);
-                    List<YMDCalendar> daysList = mCalendarPagerAdapter.getDayList(mCalendarPagerAdapter.getMonthCalendar(position));
-                    mPageListener.onMonthChanged(ymdCalendar.month, ymdCalendar.year, daysList);
-                }
+                onMonthChanged(position);
             }
         });
 
@@ -265,16 +261,39 @@ public class CalendarView extends FrameLayout {
         setImageDrawableColor(ivNext, mAttributes.get(Attr.monthHeaderArrowsColor));
     }
 
+    private void onMonthChanged(int position) {
+        if (mPageListener != null) {
+            Calendar calendar = mCalendarPagerAdapter.getMonthCalendar(position);
+            List<YMDCalendar> daysList = mCalendarPagerAdapter.getDayList(calendar);
+
+            calendar.add(Calendar.MONTH, -1);
+            YMDCalendar previousMonthFirstDay = mCalendarPagerAdapter.getDayList(calendar).get(0);
+
+            calendar.add(Calendar.MONTH, +2);
+            List<YMDCalendar> nextMonthDaysList = mCalendarPagerAdapter.getDayList(calendar);
+            YMDCalendar nextMonthLastDay = nextMonthDaysList.get(nextMonthDaysList.size() - 1);
+
+            mPageListener.onMonthChanged(calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.YEAR), daysList,
+                    previousMonthFirstDay, nextMonthLastDay);
+        }
+    }
+
+    public void performOnMonthChanged() {
+        onMonthChanged(mCalendarPagerAdapter.mCurrentPage);
+    }
+
     public int getShownMonth() {
-        return mCalendarPagerAdapter.getMonthYmdCalendar(mCalendarPagerAdapter.mCurrentPage).month;
+        return mCalendarPagerAdapter.getMonthCalendar(mCalendarPagerAdapter.mCurrentPage)
+                .get(Calendar.DAY_OF_MONTH);
     }
 
     public int getShownYear() {
-        return mCalendarPagerAdapter.getMonthYmdCalendar(mCalendarPagerAdapter.mCurrentPage).year;
+        return mCalendarPagerAdapter.getMonthCalendar(mCalendarPagerAdapter.mCurrentPage)
+                .get(Calendar.YEAR);
     }
 
     public YMDCalendar getShownYearMonth() {
-        return mCalendarPagerAdapter.getMonthYmdCalendar(mCalendarPagerAdapter.mCurrentPage);
+        return new YMDCalendar(mCalendarPagerAdapter.getMonthCalendar(mCalendarPagerAdapter.mCurrentPage));
     }
 
     public List<YMDCalendar> getShownDays() {
@@ -517,7 +536,7 @@ public class CalendarView extends FrameLayout {
                 R.id.day_item_6_5, R.id.day_item_6_6, R.id.day_item_6_7
         };
 
-        private int NUMBER_OF_DAYS = dayViewIDs.length;
+        public final int NUMBER_OF_DAYS = dayViewIDs.length;
         private int NUMBER_OF_PAGES;
 
         private int mCurrentPage;
@@ -763,12 +782,6 @@ public class CalendarView extends FrameLayout {
                     }
                 });
             }
-        }
-
-        public YMDCalendar getMonthYmdCalendar(int position) {
-            Calendar month = (Calendar) mInitialMonth.clone();
-            month.add(Calendar.MONTH, position - mInitialPage);
-            return new YMDCalendar(month);
         }
 
         public Calendar getMonthCalendar(int position) {
@@ -1304,7 +1317,8 @@ public class CalendarView extends FrameLayout {
     }
 
     public interface OnMonthChangedListener {
-        void onMonthChanged(int month, int year, @NonNull List<YMDCalendar> daysList);
+        void onMonthChanged(int month, int year, @NonNull List<YMDCalendar> daysList,
+                            @NonNull YMDCalendar previousMonthFirstDay, @NonNull YMDCalendar nextMonthLastDay);
     }
 
     public interface MonthViewDecorator {
