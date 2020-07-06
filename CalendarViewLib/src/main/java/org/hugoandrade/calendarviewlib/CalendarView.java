@@ -203,6 +203,8 @@ public class CalendarView extends FrameLayout {
         mAttributes.put(Attr.currentDayCircleColor,
                 a.getColor(R.styleable.CalendarView_current_day_circle_color,
                         mAttributes.get(Attr.currentDayTextColor)));
+        mAttributes.put(Attr.currentDayBackgroundTop,
+                a.getBoolean(R.styleable.CalendarView_current_day_background_top, false) ? 1 : 0);
 
         // Selected Day
         mAttributes.put(Attr.selectedDayTextColor,
@@ -724,7 +726,14 @@ public class CalendarView extends FrameLayout {
                 }
                 changeTypeface(tvDay, mAttributes.get(Attr.currentDayTextStyle));
                 tvDay.setSelectedEnabled(mAttributes.get(Attr.currentDayCircleEnable) == 1);
-                container.setBackgroundColor(backgroundColor = mAttributes.get(Attr.currentDayBackgroundColor));
+                if (mAttributes.get(Attr.currentDayBackgroundTop) == 1) {
+                    tvDay.setBackgroundColor(mAttributes.get(Attr.currentDayBackgroundColor));
+                } else {
+                    tvDay.setBackgroundColor(Color.TRANSPARENT);
+                    container.setBackgroundColor(backgroundColor = mAttributes.get(Attr.currentDayBackgroundColor));
+                }
+            } else {
+                tvDay.setBackgroundColor(Color.TRANSPARENT);
             }
 
             if (isFirstFromSameMonth(day, new YMDCalendar(month)) != THIS_MONTH || day.isBefore(mMinDate)) {
@@ -1365,6 +1374,7 @@ public class CalendarView extends FrameLayout {
         static final int currentDayBackgroundColor = 8;
         static final int currentDayCircleEnable = 9;
         static final int currentDayCircleColor = 10;
+        static final int currentDayBackgroundTop = 32;
 
         static final int offsetDayTextColor = 11;
         static final int offsetDayBackgroundColor = 12;
