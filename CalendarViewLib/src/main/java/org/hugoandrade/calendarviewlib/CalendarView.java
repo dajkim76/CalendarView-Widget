@@ -178,7 +178,7 @@ public class CalendarView extends FrameLayout {
         mAttributes.put(Attr.dayBackgroundColor,
                 a.getColor(R.styleable.CalendarView_day_background_color, Color.TRANSPARENT));
         mAttributes.put(Attr.dayOutBackgroundColor,
-                a.getColor(R.styleable.CalendarView_day_out_background_color, mAttributes.get(Attr.dayBackgroundColor)));
+                a.getColor(R.styleable.CalendarView_day_out_background_color, 0xfff0f0f0));
         mAttributes.put(Attr.dayTextGravity,
                 a.getInt(R.styleable.CalendarView_day_text_gravity, Gravity.NO_GRAVITY));
         mAttributes.put(Attr.dayTextSize,
@@ -737,14 +737,9 @@ public class CalendarView extends FrameLayout {
             }
 
             if (isFirstFromSameMonth(day, new YMDCalendar(month)) != THIS_MONTH || day.isBefore(mMinDate)) {
-                if (backgroundColor != dayBackgroundColor) {
-                    container.setAlpha(0.25f);
-                } else {
+                if (backgroundColor == dayBackgroundColor) {
                     container.setBackgroundColor(dayOutBackgroundColor);
-                    container.setAlpha(1f);
                 }
-            } else {
-                container.setAlpha(1f);
             }
 
             if (mDayViewDecorator != null) {
