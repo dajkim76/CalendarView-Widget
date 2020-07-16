@@ -266,6 +266,8 @@ public class CalendarView extends FrameLayout {
     private void onMonthChanged(int position) {
         if (mPageListener != null) {
             Calendar calendar = mCalendarPagerAdapter.getMonthCalendar(position);
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
             List<YMDCalendar> daysList = mCalendarPagerAdapter.getDayList(calendar);
 
             calendar.add(Calendar.MONTH, -1);
@@ -275,8 +277,7 @@ public class CalendarView extends FrameLayout {
             List<YMDCalendar> nextMonthDaysList = mCalendarPagerAdapter.getDayList(calendar);
             YMDCalendar nextMonthLastDay = nextMonthDaysList.get(nextMonthDaysList.size() - 1);
 
-            mPageListener.onMonthChanged(calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.YEAR), daysList,
-                    previousMonthFirstDay, nextMonthLastDay);
+            mPageListener.onMonthChanged(month, year, daysList, previousMonthFirstDay, nextMonthLastDay);
         }
     }
 
